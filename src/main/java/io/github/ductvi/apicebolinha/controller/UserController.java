@@ -7,6 +7,7 @@ import io.github.ductvi.apicebolinha.controller.mapper.UserMapper;
 import io.github.ductvi.apicebolinha.model.User;
 import io.github.ductvi.apicebolinha.security.SecurityService;
 import io.github.ductvi.apicebolinha.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,8 @@ public class UserController implements GenericController {
     private final SecurityService securityService;
     private final PasswordEncoder encoder;
 
-    @PostMapping()
+    @PostMapping
+    @Operation(summary = "Salvar", description = "Salvar novo usuário")
     public ResponseEntity<Void> save(@RequestBody @Valid UserDTO userDto) {
         User user = mapper.toEntity(userDto);
         service.save(user);
@@ -37,6 +39,7 @@ public class UserController implements GenericController {
     }
 
     @GetMapping("{id}")
+    @Operation(summary = "Detalhes Usuário", description = "Ver detalhes do usuário")
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable("id") String idUser) {
         UUID id = UUID.fromString(idUser);
 
@@ -47,6 +50,7 @@ public class UserController implements GenericController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary = "Atualizar senha", description = "Atualizar senha do usuário")
     public ResponseEntity<Object> updatePassword(
             @PathVariable("id") String id,
             @RequestBody @Valid UserUpdateDTO userDto) {
@@ -57,6 +61,7 @@ public class UserController implements GenericController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Deletar", description = "Deletar usuário")
     public ResponseEntity<Object> delete(@PathVariable("id") String id) {
         service.delete(UUID.fromString(id), securityService.loggedUser().getId());
 

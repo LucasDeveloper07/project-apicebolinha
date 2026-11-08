@@ -8,6 +8,7 @@ import io.github.ductvi.apicebolinha.model.Recipe;
 import io.github.ductvi.apicebolinha.model.enums.RecipeCategory;
 import io.github.ductvi.apicebolinha.security.SecurityService;
 import io.github.ductvi.apicebolinha.service.RecipeService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ public class RecipeController implements GenericController {
     private final SecurityService securityService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Salvar", description = "Salvar nova receita")
     public ResponseEntity<Void> save(
             @RequestPart("data") @Valid RecipeDTO recipeDto,
             @RequestPart(value = "photo", required = false)MultipartFile photo) {
@@ -42,6 +44,7 @@ public class RecipeController implements GenericController {
     }
 
     @GetMapping("{id}")
+    @Operation(summary = "Ver Receita", description = "Ver detalhes da receita")
     public ResponseEntity<RecipeResponseDTO> getDetails(@PathVariable("id") String id) {
         return service
                 .findById(UUID.fromString(id))
@@ -52,6 +55,7 @@ public class RecipeController implements GenericController {
     }
 
     @PutMapping(path = "{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Atualizar", description = "Atualizar detalhes da receita")
     public ResponseEntity<Object> update(
             @PathVariable("id") String id,
             @RequestPart("data") @Valid RecipeUpdateDTO recipeDto,
@@ -63,6 +67,7 @@ public class RecipeController implements GenericController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Deletar", description = "Deletar receita")
     public ResponseEntity<Object> delete(@PathVariable("id") String id) {
         return service
                 .findById(UUID.fromString(id))
@@ -73,6 +78,7 @@ public class RecipeController implements GenericController {
     }
 
     @GetMapping
+    @Operation(summary = "Pesquisa", description = "Pesquisa páginada")
     public ResponseEntity<Page<RecipeResponseDTO>> search(
             @RequestParam(value = "title", required = false)
             String title,

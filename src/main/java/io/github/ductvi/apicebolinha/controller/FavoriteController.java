@@ -5,6 +5,7 @@ import io.github.ductvi.apicebolinha.controller.dto.RecipeResponseDTO;
 import io.github.ductvi.apicebolinha.controller.mapper.RecipeMapper;
 import io.github.ductvi.apicebolinha.security.SecurityService;
 import io.github.ductvi.apicebolinha.service.FavoriteService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class FavoriteController {
     private final SecurityService securityService;
 
     @PostMapping
+    @Operation(summary = "Salvar", description = "Registrar novo favorito")
     public ResponseEntity<Void> save(@RequestBody @Valid FavoriteDTO dto) {
         service.create(securityService.loggedUser().getId(), dto.recipeId());
 
@@ -30,6 +32,7 @@ public class FavoriteController {
     }
 
     @DeleteMapping("{recipeId}")
+    @Operation(summary = "Deletar", description = "Remover favorito")
     public ResponseEntity<Object> delete(
             @PathVariable("recipeId") String recipeId) {
         service.delete(securityService.loggedUser().getId(), UUID.fromString(recipeId));
@@ -37,6 +40,7 @@ public class FavoriteController {
     }
 
     @GetMapping
+    @Operation(summary = "Listar", description = "Listar favoritos")
     public ResponseEntity<List<RecipeResponseDTO>> list() {
         UUID userId = securityService.loggedUser().getId();
 
