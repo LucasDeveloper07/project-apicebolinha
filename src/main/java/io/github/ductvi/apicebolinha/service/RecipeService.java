@@ -4,12 +4,16 @@ import io.github.ductvi.apicebolinha.controller.dto.RecipeUpdateDTO;
 import io.github.ductvi.apicebolinha.exception.RecordNotFoundException;
 import io.github.ductvi.apicebolinha.model.Recipe;
 import io.github.ductvi.apicebolinha.model.User;
+import io.github.ductvi.apicebolinha.model.enums.RecipeCategory;
 import io.github.ductvi.apicebolinha.repository.RecipeRepository;
-import io.github.ductvi.apicebolinha.repository.UserRepository;
+import io.github.ductvi.apicebolinha.repository.specs.RecipeSpecs;
 import io.github.ductvi.apicebolinha.validator.PhotoValidator;
 import io.github.ductvi.apicebolinha.validator.RecipeValidator;
-import io.github.ductvi.apicebolinha.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static io.github.ductvi.apicebolinha.repository.specs.RecipeSpecs.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -78,6 +84,25 @@ public class RecipeService {
         validator.validateExists(recipe.getId());
         validator.validateOwner(recipe, user.getId());
         repository.delete(recipe);
+    }
+
+    public Page<Recipe> search(
+            String title, RecipeCategory category, Integer page, Integer pageSize) {
+
+        Specification<Recipe> specs =
+                Specification.where((root, query, cb) -> cb.conjunction() );
+
+        if (title != null) {
+            specs = specs.and(titleLike(title));
+        }
+
+        if (category != null) {
+            specs = specs.and(categoryEqual(category));
+        }
+
+        Pageable pageRequest = PageRequest.of(page, pageSize);
+
+        return repository.findAll(specs, pageRequest);
     }
 
     public List<Recipe> findByUserId(UUID userId) {

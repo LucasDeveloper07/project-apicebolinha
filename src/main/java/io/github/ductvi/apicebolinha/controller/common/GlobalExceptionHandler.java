@@ -3,9 +3,11 @@ package io.github.ductvi.apicebolinha.controller.common;
 import io.github.ductvi.apicebolinha.controller.dto.CustomFieldError;
 import io.github.ductvi.apicebolinha.controller.dto.ResponseError;
 import io.github.ductvi.apicebolinha.exception.*;
-import org.apache.tomcat.websocket.AuthenticationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @RestControllerAdvice
 @ResponseStatus(HttpStatus.UNPROCESSABLE_CONTENT)
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -99,9 +102,20 @@ public class GlobalExceptionHandler {
         return new ResponseError(HttpStatus.FORBIDDEN.value(), e.getMessage(), List.of());
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseError handleBadCredentialsException(BadCredentialsException e) {
+        return new ResponseError(
+                HttpStatus.UNAUTHORIZED.value(),
+                e.getMessage(),
+                List.of()
+        );
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseError unhandledErros(RuntimeException e) {
+        log.error("Erro inesperado:", e);
         return new ResponseError(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Erro inesperado!",

@@ -23,10 +23,14 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPublicKey;
+import java.util.List;
 import java.util.UUID;
 
 @Configuration
@@ -85,5 +89,22 @@ public class SecurityConfiguration {
     @Bean
     public JwtDecoder jwtDecoder(RSAKey rsaKey) throws Exception {
         return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(List.of("POST", "GET", "PUT", "PATCH","DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        configuration.setExposedHeaders(List.of("Location"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }

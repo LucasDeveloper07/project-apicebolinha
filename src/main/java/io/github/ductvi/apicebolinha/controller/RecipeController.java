@@ -5,10 +5,12 @@ import io.github.ductvi.apicebolinha.controller.dto.RecipeResponseDTO;
 import io.github.ductvi.apicebolinha.controller.dto.RecipeUpdateDTO;
 import io.github.ductvi.apicebolinha.controller.mapper.RecipeMapper;
 import io.github.ductvi.apicebolinha.model.Recipe;
+import io.github.ductvi.apicebolinha.model.enums.RecipeCategory;
 import io.github.ductvi.apicebolinha.security.SecurityService;
 import io.github.ductvi.apicebolinha.service.RecipeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,5 +70,26 @@ public class RecipeController implements GenericController {
                     service.delete(recipe, securityService.loggedUser());
                     return ResponseEntity.noContent().build();
                 }).orElseGet( () -> ResponseEntity.notFound().build() );
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<RecipeResponseDTO>> search(
+            @RequestParam(value = "title", required = false)
+            String title,
+
+            @RequestParam(value = "category", required = false)
+            RecipeCategory category,
+
+            @RequestParam(value = "page", defaultValue = "0")
+            Integer page,
+
+            @RequestParam(value = "page-size", defaultValue = "10")
+            Integer pageSize){
+
+        Page<Recipe> pageResult = service.search(title, category, page, pageSize);
+
+        Page<RecipeResponseDTO> pageResponse = pageResult.map(mapper::toDTO);
+
+        return ResponseEntity.ok(pageResponse);
     }
 }

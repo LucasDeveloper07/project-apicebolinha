@@ -26,7 +26,7 @@ public class UserController implements GenericController {
     private final SecurityService securityService;
     private final PasswordEncoder encoder;
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<Void> save(@RequestBody @Valid UserDTO userDto) {
         User user = mapper.toEntity(userDto);
         service.save(user);
