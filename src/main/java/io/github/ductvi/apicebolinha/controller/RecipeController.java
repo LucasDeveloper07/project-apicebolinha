@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -97,5 +98,17 @@ public class RecipeController implements GenericController {
         Page<RecipeResponseDTO> pageResponse = pageResult.map(mapper::toDTO);
 
         return ResponseEntity.ok(pageResponse);
+    }
+
+    @GetMapping("/my-recipes")
+    @Operation(summary = "Listar receitas do user", description = "Lista todas as receitas do user logado")
+    public ResponseEntity<List<RecipeResponseDTO>> getAllRecipesForUser() {
+        var listRecipesDto = service
+                .findByUserId(securityService.loggedUser().getId())
+                .stream()
+                .map(mapper::toDTO)
+                .toList();
+
+        return ResponseEntity.ok(listRecipesDto);
     }
 }

@@ -50,6 +50,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers("/error").permitAll();
                     authorize.requestMatchers(HttpMethod.POST, "/auth/login", "/users").permitAll();
+                    authorize.requestMatchers(HttpMethod.GET, "/recipes/my-recipes").authenticated();
                     authorize.requestMatchers(HttpMethod.GET, "/recipes/**").permitAll();
 
                     authorize.anyRequest().authenticated();
