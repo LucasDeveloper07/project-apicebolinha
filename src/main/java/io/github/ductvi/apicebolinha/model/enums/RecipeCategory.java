@@ -8,5 +8,9 @@ public enum RecipeCategory {
     SALADA,
     SOBREMESA,
     BEBIDA,
+    PRATO_PRINCIPAL,
+    ENTRADA,
+    PETISCO,
+    LANCHE,
     OUTROS
 }
